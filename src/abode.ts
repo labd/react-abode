@@ -1,20 +1,24 @@
 import { render } from 'react-dom';
 import { createElement } from 'react';
 
-interface RegisteredComponent {
-  name: string;
-  fn: () => Promise<any>;
+interface RegisteredComponents {
+  [key: string]: () => Promise<any>;
 }
 interface Props {
   [key: string]: string;
 }
 
+interface Modules {
+  [key: string]: NodeModule;
+}
+
 let componentSelector = 'data-component';
-let components: RegisteredComponent[] = [];
+let components: RegisteredComponents = {};
 let scriptProps: Props = {};
+let modules: Modules = {};
 
 export const register = (name: string, fn: () => Promise<any>) => {
-  components = [...components, { name, fn }];
+  components[name] = fn;
 };
 
 export const getCleanPropName = (raw: string): string => {
@@ -43,22 +47,50 @@ export const getScriptProps = () => {
   return { ...scriptProps };
 };
 
+export const getModule = async (name: string): Promise<NodeModule> => {
+  if (modules[name]) {
+    return modules[name];
+  }
+
+  if (!components[name]) new Error(`${name} not registered `);
+  const module = await components[name]();
+  if (!module.default) new Error(`${name} does not have default export `);
+  modules[name] = module;
+  return module;
+};
+
+export const renderAbode = async (el: Element) => {
+  const props = getProps(el);
+
+  const componentName = Array.from(el.attributes).find(
+    at => at.name === componentSelector
+  )?.value;
+  if (!componentName) {
+    new Error(`value not set for ${componentName}`);
+    return;
+  }
+  const module = await getModule(componentName);
+
+  // @ts-ignore
+  render(createElement(module.default, props), el);
+};
+
+export const trackPropChanges = (el: Element) => {
+  const observer = new MutationObserver(() => {
+    renderAbode(el);
+  });
+  observer.observe(el, { attributes: true });
+};
+
 export const update = async () => {
-  components.forEach(async component => {
-    const refs = Array.from(
-      document.querySelectorAll(`[${componentSelector}=${component.name}]`)
-    ).filter(el => !el.getAttribute('react-abode-populated'));
-
-    // tag first, since adding components is a slow process and will cause components to get iterated multiple times
-    refs.forEach(el => el.setAttribute('react-abode-populated', 'true'));
-
-    if (refs.length) {
-      const module = await component.fn();
-      refs.forEach(el => {
-        const props = getProps(el);
-        render(createElement(module.default, props), el);
-      });
-    }
+  const refs = Array.from(
+    document.querySelectorAll(`[${componentSelector}]`)
+  ).filter(el => !el.getAttribute('react-abode-populated'));
+  // tag first, since adding components is a slow process and will cause components to get iterated multiple times
+  refs.forEach(el => el.setAttribute('react-abode-populated', 'true'));
+  refs.forEach(el => {
+    renderAbode(el);
+    trackPropChanges(el);
   });
 };
 
