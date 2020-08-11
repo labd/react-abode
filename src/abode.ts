@@ -2,23 +2,19 @@ import { render } from 'react-dom';
 import { createElement } from 'react';
 
 interface RegisteredComponents {
-  [key: string]: () => Promise<any>;
-}
-interface Props {
-  [key: string]: string;
+  [key: string]: Promise<any>;
 }
 
-interface Modules {
-  [key: string]: NodeModule;
+interface Props {
+  [key: string]: string;
 }
 
 let componentSelector = 'data-component';
 let components: RegisteredComponents = {};
 let scriptProps: Props = {};
-let modules: Modules = {};
 
 export const register = (name: string, fn: () => Promise<any>) => {
-  components[name] = fn;
+  components[name] = fn();
 };
 
 export const getCleanPropName = (raw: string): string => {
@@ -47,18 +43,6 @@ export const getScriptProps = () => {
   return { ...scriptProps };
 };
 
-export const getModule = async (name: string): Promise<NodeModule> => {
-  if (modules[name]) {
-    return modules[name];
-  }
-
-  if (!components[name]) new Error(`${name} not registered `);
-  const module = await components[name]();
-  if (!module.default) new Error(`${name} does not have default export `);
-  modules[name] = module;
-  return module;
-};
-
 export const renderAbode = async (el: Element) => {
   const props = getProps(el);
 
@@ -69,7 +53,7 @@ export const renderAbode = async (el: Element) => {
     new Error(`value not set for ${componentName}`);
     return;
   }
-  const module = await getModule(componentName);
+  const module = await components[componentName];
 
   // @ts-ignore
   render(createElement(module.default, props), el);
@@ -88,6 +72,7 @@ export const update = async () => {
   ).filter(el => !el.getAttribute('react-abode-populated'));
   // tag first, since adding components is a slow process and will cause components to get iterated multiple times
   refs.forEach(el => el.setAttribute('react-abode-populated', 'true'));
+
   refs.forEach(el => {
     renderAbode(el);
     trackPropChanges(el);
