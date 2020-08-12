@@ -2,7 +2,7 @@ import { render } from 'react-dom';
 import { createElement } from 'react';
 
 interface RegisteredComponents {
-  [key: string]: Promise<any>;
+  [key: string]: Promise<NodeModule>;
 }
 
 interface Props {
@@ -13,7 +13,7 @@ let componentSelector = 'data-component';
 let components: RegisteredComponents = {};
 let scriptProps: Props = {};
 
-export const register = (name: string, fn: () => Promise<any>) => {
+export const register = (name: string, fn: () => Promise<NodeModule>) => {
   components[name] = fn();
 };
 
