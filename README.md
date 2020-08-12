@@ -14,7 +14,7 @@ React Abode allows you to pass props to your React components by using a `data-p
 
 ### Script props
 
-React Abode allows you to pass `data-prop-` props to the script. These can then be consumed inside your bundle by using `getCScriptProps()`. This is useful when you need to have a prop available in every component.
+React Abode allows you to pass `data-prop-` props to the script. These can then be consumed inside your bundle by using `getScriptProps()`. This is useful when you need to have a prop available in every component.
 
 ```html
 <script
@@ -25,7 +25,7 @@ React Abode allows you to pass `data-prop-` props to the script. These can then 
 
 ```javascript
 const scriptProps = getScriptProps();
-console.log(scriptProps.globalProps);
+console.log(scriptProps.globalProp);
 ```
 
 ### Automatic DOM node detection
