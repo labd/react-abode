@@ -18,9 +18,9 @@ interface PopulateOptions {
   callback?: Function;
 }
 
-let componentSelector = 'data-component';
-let components: RegisteredComponents = {};
-let unPopulatedElements: Element[] = [];
+export let componentSelector = 'data-component';
+export let components: RegisteredComponents = {};
+export let unPopulatedElements: Element[] = [];
 
 export const register = (name: string, fn: () => Promise<any>) => {
   components[name] = fn();
@@ -28,6 +28,12 @@ export const register = (name: string, fn: () => Promise<any>) => {
 
 export const setComponentSelector = (selector: string) => {
   componentSelector = selector;
+};
+
+export const getActiveComponents = () => {
+  return Array.from(
+    new Set(getAbodeElements().map(el => el.getAttribute(componentSelector)))
+  );
 };
 
 // start prop logic
@@ -55,10 +61,14 @@ export const getScriptProps = () => {
 // end prop logic
 
 // start element logic
+export const getAbodeElements = (): Element[] => {
+  return Array.from(document.querySelectorAll(`[${componentSelector}]`));
+};
+
 export const setUnpopulatedElements = () => {
-  unPopulatedElements = Array.from(
-    document.querySelectorAll(`[${componentSelector}]`)
-  ).filter(el => !el.getAttribute('react-abode-populated'));
+  unPopulatedElements = getAbodeElements().filter(
+    el => !el.getAttribute('react-abode-populated')
+  );
 };
 
 export const setAttributes = (

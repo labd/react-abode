@@ -69,7 +69,17 @@ Include a div with the selector in your HTML. Load the bundle in a script tag **
 
 ## Options
 
+### Utility functions
+
+#### setComponentSelector
+
 If you do not want to use `data-component` you can change the component selector by using `setComponentSelector('data-my-component-selector')`.
+
+#### getActiveComponents
+
+You can use `getActiveComponents` to get a list of all Abode elements currently in your DOM.
+
+### Populate parameters
 
 The `populate` function can be passed an object with options.
 
