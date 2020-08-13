@@ -71,4 +71,13 @@ Include a div with the selector in your HTML. Load the bundle in a script tag **
 
 If you do not want to use `data-component` you can change the component selector by using `setComponentSelector('data-my-component-selector')`.
 
-You can pass HTML element attributes to `populate`. These will be applied to every populated element.
+The `populate` function can be passed an object with options.
+
+| name       | type     | purpose                                                                                     | example                                                 |
+| ---------- | -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| attributes | object   | attributes which will be aplied to every react-abode container                              | `{attributes: { classname: "some-class-name"}}`         |
+| callback   | function | function which will be executed every time a new batch of react-abode elements is populated | `() => console.log('new abode elements added to page')` |
+
+```
+
+```
