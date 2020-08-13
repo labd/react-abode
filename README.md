@@ -51,7 +51,7 @@ import { populate, register } from 'react-abode';
 
 register('Cart', () => import('./modules/Cart/Cart')); // Each module must have the component you want to render as a default export
 
-populate();
+populate({ attributes: { classname: 'some-class-name' } });
 ```
 
 Include a div with the selector in your HTML. Load the bundle in a script tag **inside the `<body> </body>`**. On loading the page, React Abode will check for components with the matching selector, which is `data-component` by default.
@@ -69,4 +69,6 @@ Include a div with the selector in your HTML. Load the bundle in a script tag **
 
 ## Options
 
-If you do not want to use `data-component` you can change the component selector by using `setComponentSelector('data-my-component-selector')`
+If you do not want to use `data-component` you can change the component selector by using `setComponentSelector('data-my-component-selector')`.
+
+You can pass HTML element attributes to `populate`. These will be applied to every populated element.

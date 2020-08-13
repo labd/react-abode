@@ -2,18 +2,26 @@ import { render } from 'react-dom';
 import { createElement } from 'react';
 
 interface RegisteredComponents {
-  [key: string]: Promise<NodeModule>;
+  [key: string]: Promise<any>;
 }
 
 interface Props {
   [key: string]: string;
 }
 
+interface HTMLElementAttributes {
+  [key: string]: string;
+}
+
+interface PopulateOptions {
+  attributes?: HTMLElementAttributes;
+}
+
 let componentSelector = 'data-component';
 let components: RegisteredComponents = {};
 let scriptProps: Props = {};
 
-export const register = (name: string, fn: () => Promise<NodeModule>) => {
+export const register = (name: string, fn: () => Promise<any>) => {
   components[name] = fn();
 };
 
@@ -66,7 +74,14 @@ export const trackPropChanges = (el: Element) => {
   observer.observe(el, { attributes: true });
 };
 
-export const update = async () => {
+export const setAttributes = (
+  el: Element,
+  attributes: HTMLElementAttributes
+) => {
+  Object.entries(attributes).forEach(([k, v]) => el.setAttribute(k, v));
+};
+
+export const update = async (options?: PopulateOptions) => {
   const refs = Array.from(
     document.querySelectorAll(`[${componentSelector}]`)
   ).filter(el => !el.getAttribute('react-abode-populated'));
@@ -74,14 +89,15 @@ export const update = async () => {
   refs.forEach(el => el.setAttribute('react-abode-populated', 'true'));
 
   refs.forEach(el => {
+    if (options?.attributes) setAttributes(el, options.attributes);
     renderAbode(el);
     trackPropChanges(el);
   });
 };
 
-export const populate = async () => {
-  await update();
-  document.body.addEventListener('DOMNodeInserted', update);
+export const populate = async (options?: PopulateOptions) => {
+  await update(options);
+  document.body.addEventListener('DOMNodeInserted', () => update(options));
 };
 
 export const setComponentSelector = (selector: string) => {
