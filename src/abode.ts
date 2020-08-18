@@ -85,16 +85,16 @@ export const renderAbode = async (el: Element) => {
   const componentName = Array.from(el.attributes).find(
     at => at.name === componentSelector
   )?.value;
+
   if (!componentName) {
-    new Error(
+    throw new Error(
       `not all react-abode elements have a value for  ${componentSelector}`
     );
-    return;
   }
+
   const module = await components[componentName];
   if (!module) {
-    new Error(`no component registered for ${componentName}`);
-    return;
+    throw new Error(`no component registered for ${componentName}`);
   }
 
   // @ts-ignore
@@ -121,20 +121,19 @@ export const update = async (
   });
 };
 
+const checkForAndHandleNewComponents = async (options?: PopulateOptions) => {
+  setUnpopulatedElements();
+
+  if (unPopulatedElements.length) {
+    await update(unPopulatedElements, options);
+    unPopulatedElements = [];
+    if (options?.callback) options.callback();
+  }
+};
+
 export const populate = async (options?: PopulateOptions) => {
-  const checkForAndHandleNewComponents = async () => {
-    setUnpopulatedElements();
-
-    if (unPopulatedElements.length) {
-      await update(unPopulatedElements, options);
-      unPopulatedElements = [];
-      if (options?.callback) options.callback();
-    }
-  };
-
-  checkForAndHandleNewComponents();
-  document.body.addEventListener(
-    'DOMNodeInserted',
-    checkForAndHandleNewComponents
+  checkForAndHandleNewComponents(options);
+  document.body.addEventListener('DOMNodeInserted', () =>
+    checkForAndHandleNewComponents(options)
   );
 };
