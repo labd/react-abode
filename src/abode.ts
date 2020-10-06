@@ -22,8 +22,8 @@ export let componentSelector = 'data-component';
 export let components: RegisteredComponents = {};
 export let unPopulatedElements: Element[] = [];
 
-export const register = async (name: string, fn: () => Promise<any>) => {
-  components[name] = await retry(fn, 10, 20);
+export const register = (name: string, fn: () => Promise<any>) => {
+  components[name] = retry(fn, 10, 20);
 };
 
 export const unRegisterAllComponents = () => {
@@ -125,10 +125,12 @@ export const renderAbode = async (el: Element) => {
 };
 
 export const trackPropChanges = (el: Element) => {
-  const observer = new MutationObserver(() => {
-    renderAbode(el);
-  });
-  observer.observe(el, { attributes: true });
+  if (MutationObserver) {
+    const observer = new MutationObserver(() => {
+      renderAbode(el);
+    });
+    observer.observe(el, { attributes: true });
+  }
 };
 
 export const update = async (

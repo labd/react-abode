@@ -9,9 +9,12 @@ import {
   register,
   unRegisterAllComponents,
   components,
+  populate,
+  delay,
 } from '../src/abode';
 
-describe('getCleanPropName', () => {});
+import 'mutationobserver-shim';
+global.MutationObserver = window.MutationObserver;
 
 describe('helper functions', () => {
   beforeEach(() => (document.getElementsByTagName('html')[0].innerHTML = ''));
@@ -96,15 +99,35 @@ describe('exported functions', () => {
   });
 
   it('register', async () => {
-    await register('TestComponent', () => import('./TestComponent'));
+    register('TestComponent', () => import('./TestComponent'));
     expect(Object.keys(components)).toEqual(['TestComponent']);
     expect(Object.values(components).length).toEqual(1);
-    expect(Object.keys(Object.values(components)[0])).toEqual(['default']);
+    const promise = Object.values(components)[0];
+    expect(typeof promise.then).toEqual('function');
+    const module = await promise;
+    expect(Object.keys(module)).toEqual(['default']);
+  });
+
+  it('populate', async () => {
+    const abodeElement = document.createElement('div');
+    abodeElement.setAttribute('data-component', 'TestComponent');
+    document.body.appendChild(abodeElement);
+    expect(document.body.innerHTML).toEqual(
+      `<div data-component="TestComponent"></div>`
+    );
+
+    register('TestComponent', () => import('./TestComponent'));
+    populate();
+
+    await delay(20);
+
+    expect(document.body.innerHTML).toEqual(
+      `<div data-component="TestComponent" react-abode-populated="true"><div>testing 1 2 3 </div></div>`
+    );
   });
 
   it.skip('getActiveComponents', () => {});
   it.skip('setComponentSelector', () => {});
   it.skip('register', () => {});
-  it.skip('populate', () => {});
   it.skip('getSriptProps', () => {});
 });
