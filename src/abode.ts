@@ -22,8 +22,31 @@ export let componentSelector = 'data-component';
 export let components: RegisteredComponents = {};
 export let unPopulatedElements: Element[] = [];
 
-export const register = (name: string, fn: () => Promise<any>) => {
-  components[name] = fn();
+export const register = async (name: string, fn: () => Promise<any>) => {
+  components[name] = await retry(fn, 10, 20);
+};
+
+export const unRegisterAllComponents = () => {
+  components = {};
+};
+
+export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+const retry = async (
+  fn: () => any,
+  times: number,
+  delayTime: number
+): Promise<any> => {
+  try {
+    return await fn();
+  } catch (err) {
+    if (times > 1) {
+      await delay(delayTime);
+      return retry(fn, times - 1, delayTime * 2);
+    } else {
+      throw new Error(err);
+    }
+  }
 };
 
 export const setComponentSelector = (selector: string) => {
@@ -86,7 +109,7 @@ export const renderAbode = async (el: Element) => {
     at => at.name === componentSelector
   )?.value;
 
-  if (!componentName) {
+  if (!componentName || componentName === '') {
     throw new Error(
       `not all react-abode elements have a value for  ${componentSelector}`
     );

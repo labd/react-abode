@@ -5,6 +5,10 @@ import {
   setUnpopulatedElements,
   getElementProps,
   setAttributes,
+  renderAbode,
+  register,
+  unRegisterAllComponents,
+  components,
 } from '../src/abode';
 
 describe('getCleanPropName', () => {});
@@ -54,14 +58,53 @@ describe('helper functions', () => {
     expect(abodeElement.getAttribute('classname')).toBe('test-class-name');
   });
 
-  it.skip('getSriptProps', () => {});
-  it.skip('renderAbode', () => {});
+  it('renderAbode without component name set', async () => {
+    const abodeElement = document.createElement('div');
+    abodeElement.setAttribute('data-component', '');
+
+    let err;
+    try {
+      await renderAbode(abodeElement);
+    } catch (error) {
+      err = error;
+    }
+
+    expect(err.message).toEqual(
+      'not all react-abode elements have a value for  data-component'
+    );
+  });
+
+  it('renderAbode without component registered', async () => {
+    const abodeElement = document.createElement('div');
+    abodeElement.setAttribute('data-component', 'TestComponent');
+
+    let err;
+    try {
+      await renderAbode(abodeElement);
+    } catch (error) {
+      err = error;
+    }
+
+    expect(err.message).toEqual('no component registered for TestComponent');
+  });
 });
 
 describe('exported functions', () => {
-  it.skip('register', () => {});
+  beforeEach(() => {
+    document.getElementsByTagName('html')[0].innerHTML = '';
+    unRegisterAllComponents();
+  });
+
+  it('register', async () => {
+    await register('TestComponent', () => import('./TestComponent'));
+    expect(Object.keys(components)).toEqual(['TestComponent']);
+    expect(Object.values(components).length).toEqual(1);
+    expect(Object.keys(Object.values(components)[0])).toEqual(['default']);
+  });
+
   it.skip('getActiveComponents', () => {});
   it.skip('setComponentSelector', () => {});
   it.skip('register', () => {});
   it.skip('populate', () => {});
+  it.skip('getSriptProps', () => {});
 });
