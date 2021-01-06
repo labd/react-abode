@@ -3,5 +3,6 @@ export {
   setComponentSelector,
   register,
   getScriptProps,
+  getRegisteredComponents,
   getActiveComponents,
 } from './abode';
