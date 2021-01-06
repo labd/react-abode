@@ -106,6 +106,12 @@ describe('exported functions', () => {
     expect(typeof promise.then).toEqual('function');
     const module = await promise;
     expect(Object.keys(module)).toEqual(['default']);
+
+    register('TestComponent2', () => import('./TestComponent'));
+    expect(Object.keys(components)).toEqual(['TestComponent', 'TestComponent2']);
+    expect(Object.values(components).length).toEqual(2);
+    const component = Object.values(components)[1];
+    expect(typeof component).toEqual('function');
   });
 
   it('populate', async () => {
@@ -126,6 +132,7 @@ describe('exported functions', () => {
     );
   });
 
+  it.skip('getRegisteredComponents', () => {});
   it.skip('getActiveComponents', () => {});
   it.skip('setComponentSelector', () => {});
   it.skip('register', () => {});

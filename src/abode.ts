@@ -18,9 +18,9 @@ interface PopulateOptions {
   callback?: Function;
 }
 
-export type RegisterPromise = () => Promise<any>
-export type RegisterComponent = () => FC<any>
-export type RegisterFN = RegisterPromise | RegisterComponent
+export type RegisterPromise = () => Promise<any>;
+export type RegisterComponent = () => FC<any>;
+export type RegisterFN = RegisterPromise | RegisterComponent;
 
 export let componentSelector = 'data-component';
 export let components: RegisteredComponents = {};
@@ -58,7 +58,7 @@ export const setComponentSelector = (selector: string) => {
 };
 
 export const getRegisteredComponents = () => {
-  return components
+  return components;
 };
 
 export const getActiveComponents = () => {
