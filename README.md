@@ -49,7 +49,13 @@ const Cart = (): JSX.Element => {
 // src/App.tsx
 import { populate, register } from 'react-abode';
 
-register('Cart', () => import('./modules/Cart/Cart')); // Each module must have the component you want to render as a default export
+// Import can be used to reguster component
+register('Cart', () => import('./modules/Cart/Cart'));
+
+// Component can also be used directly
+import Cart from './modules/Cart/Cart'
+
+register('Cart', () => Cart);
 
 populate({ attributes: { classname: 'some-class-name' } });
 ```
@@ -78,6 +84,10 @@ If you do not want to use `data-component` you can change the component selector
 #### getActiveComponents
 
 You can use `getActiveComponents` to get a list of all Abode elements currently in your DOM.
+
+#### getRegisteredComponents
+
+You can use `getRegisteredComponents` to get all registered components.
 
 ### Populate parameters
 
