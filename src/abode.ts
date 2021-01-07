@@ -1,5 +1,5 @@
 import { render } from 'react-dom';
-import { createElement } from 'react';
+import { createElement, FC } from 'react';
 
 interface RegisteredComponents {
   [key: string]: Promise<any>;
@@ -18,11 +18,15 @@ interface PopulateOptions {
   callback?: Function;
 }
 
+export type RegisterPromise = () => Promise<any>;
+export type RegisterComponent = () => FC<any>;
+export type RegisterFN = RegisterPromise | RegisterComponent;
+
 export let componentSelector = 'data-component';
 export let components: RegisteredComponents = {};
 export let unPopulatedElements: Element[] = [];
 
-export const register = (name: string, fn: () => Promise<any>) => {
+export const register = (name: string, fn: RegisterFN) => {
   components[name] = retry(fn, 10, 20);
 };
 
@@ -51,6 +55,10 @@ const retry = async (
 
 export const setComponentSelector = (selector: string) => {
   componentSelector = selector;
+};
+
+export const getRegisteredComponents = () => {
+  return components;
 };
 
 export const getActiveComponents = () => {
@@ -120,8 +128,9 @@ export const renderAbode = async (el: Element) => {
     throw new Error(`no component registered for ${componentName}`);
   }
 
-  // @ts-ignore
-  render(createElement(module.default, props), el);
+  const element = module.default || module;
+
+  render(createElement(element, props), el);
 };
 
 export const trackPropChanges = (el: Element) => {
