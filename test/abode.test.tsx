@@ -14,7 +14,7 @@ import {
   delay,
 } from '../src/abode';
 // @ts-ignore
-import TestComponent from './TestComponent'
+import TestComponent from './TestComponent';
 
 import 'mutationobserver-shim';
 global.MutationObserver = window.MutationObserver;
@@ -108,11 +108,14 @@ describe('exported functions', () => {
     let promise = Object.values(components)[0];
     expect(typeof promise.then).toEqual('function');
     let module = await promise;
-    expect(typeof module).toEqual('object')
+    expect(typeof module).toEqual('object');
     expect(Object.keys(module)).toEqual(['default']);
 
     register('TestComponent2', () => TestComponent);
-    expect(Object.keys(components)).toEqual(['TestComponent', 'TestComponent2']);
+    expect(Object.keys(components)).toEqual([
+      'TestComponent',
+      'TestComponent2',
+    ]);
     expect(Object.values(components).length).toEqual(2);
     promise = Object.values(components)[1];
     expect(typeof promise.then).toEqual('function');
@@ -139,7 +142,7 @@ describe('exported functions', () => {
 
     expect(document.body.innerHTML).toEqual(
       `<div data-component="TestComponent" react-abode-populated="true"><div>testing 1 2 3 </div></div>` +
-      `<div data-component="TestComponent2" react-abode-populated="true"><div>testing 1 2 3 </div></div>`
+        `<div data-component="TestComponent2" react-abode-populated="true"><div>testing 1 2 3 </div></div>`
     );
   });
 
