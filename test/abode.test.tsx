@@ -12,6 +12,7 @@ import {
   components,
   populate,
   delay,
+  compareRegisteredComponents,
 } from '../src/abode';
 // @ts-ignore
 import TestComponent from './TestComponent';
@@ -153,6 +154,35 @@ describe('exported functions', () => {
     const registeredComponents = getRegisteredComponents();
 
     expect(Object.keys(registeredComponents).length).toEqual(2);
+  });
+
+  it('compareRegisteredComponents', () => {
+    expect(compareRegisteredComponents([])).toEqual(true);
+
+    register('TestComponent', () => import('./TestComponent'));
+    expect(
+      compareRegisteredComponents(['TestComponent', 'TestComponent12'])
+    ).toEqual(false);
+
+    register('TestComponent2', () => TestComponent);
+    register('TestComponent3', () => TestComponent);
+
+    expect(compareRegisteredComponents(['TestComponent2'])).toEqual(false);
+    expect(
+      compareRegisteredComponents([
+        'TestComponent',
+        'TestComponent2',
+        'TestComponent3',
+      ])
+    ).toEqual(true);
+    expect(
+      compareRegisteredComponents([
+        'TestComponent',
+        'TestComponent2',
+        'TestComponent3',
+        'TestComponent4',
+      ])
+    ).toEqual(false);
   });
 
   it.skip('getActiveComponents', () => {});
