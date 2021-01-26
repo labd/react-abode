@@ -171,3 +171,24 @@ export const populate = async (options?: PopulateOptions) => {
     checkForAndHandleNewComponents(options)
   );
 };
+
+/**
+ * Checks whether the provided components are all registered
+ * @param externalComponents An array of component names
+ * @return {Boolean} True if all the components are registered
+ */
+export const compareRegisteredComponents = (
+  externalComponents: string[]
+): Boolean => {
+  const registeredComponents = Object.keys(components);
+  if (externalComponents.length === 0 && registeredComponents.length === 0) {
+    return true;
+  } else if (externalComponents.length !== registeredComponents.length) {
+    return false;
+  }
+  return (
+    externalComponents.filter(
+      component => !registeredComponents.includes(component)
+    ).length === 0
+  );
+};
