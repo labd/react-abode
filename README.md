@@ -49,7 +49,7 @@ const Cart = (): JSX.Element => {
 // src/App.tsx
 import { populate, register } from 'react-abode';
 
-// Import can be used to reguster component
+// Import can be used to register component
 register('Cart', () => import('./modules/Cart/Cart'));
 
 // Component can also be used directly
