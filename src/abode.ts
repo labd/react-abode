@@ -98,7 +98,7 @@ export const getAbodeElements = (): Element[] => {
       const component = el.getAttribute(componentSelector);
 
       // It should exist in registered components
-      return component && !!components[component];
+      return component && components[component];
     }
   );
 };
