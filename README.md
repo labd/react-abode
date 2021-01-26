@@ -53,7 +53,7 @@ import { populate, register } from 'react-abode';
 register('Cart', () => import('./modules/Cart/Cart'));
 
 // Component can also be used directly
-import Cart from './modules/Cart/Cart'
+import Cart from './modules/Cart/Cart';
 
 register('Cart', () => Cart);
 
@@ -88,6 +88,17 @@ You can use `getActiveComponents` to get a list of all Abode elements currently 
 #### getRegisteredComponents
 
 You can use `getRegisteredComponents` to get all registered components.
+
+#### compareRegisteredComponents
+
+You can use `compareRegisteredComponents` to check whether all your components are registered:
+
+```js
+const allAreRegistered = compareRegisteredComponents([
+  'component-A',
+  'component-B',
+]);
+```
 
 ### Populate parameters
 
