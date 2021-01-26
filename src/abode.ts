@@ -93,13 +93,14 @@ export const getScriptProps = () => {
 
 // start element logic
 export const getAbodeElements = (): Element[] => {
-  return Array.from(document.querySelectorAll(`[${componentSelector}]`))
-    .filter(el => {
-      const component = el.getAttribute(componentSelector)
+  return Array.from(document.querySelectorAll(`[${componentSelector}]`)).filter(
+    el => {
+      const component = el.getAttribute(componentSelector);
 
       // It should exist in registered components
-      return component && !!components[component]
-    });
+      return component && !!components[component];
+    }
+  );
 };
 
 export const setUnpopulatedElements = () => {

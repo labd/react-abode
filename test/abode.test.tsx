@@ -22,7 +22,7 @@ global.MutationObserver = window.MutationObserver;
 describe('helper functions', () => {
   beforeEach(() => {
     document.getElementsByTagName('html')[0].innerHTML = '';
-    unRegisterAllComponents()
+    unRegisterAllComponents();
   });
 
   it('getCleanPropName', () => {
@@ -38,7 +38,7 @@ describe('helper functions', () => {
 
     expect(getAbodeElements()).toHaveLength(0);
 
-    register('TestComponent', () => TestComponent)
+    register('TestComponent', () => TestComponent);
 
     expect(getAbodeElements()).toHaveLength(1);
   });
@@ -52,7 +52,7 @@ describe('helper functions', () => {
 
     expect(unPopulatedElements).toHaveLength(0);
 
-    register('TestComponent', () => TestComponent)
+    register('TestComponent', () => TestComponent);
     setUnpopulatedElements();
 
     expect(unPopulatedElements).toHaveLength(1);
