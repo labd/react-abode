@@ -55,7 +55,7 @@ register('Cart', () => import('./modules/Cart/Cart'));
 // Component can also be used directly
 import Cart from './modules/Cart/Cart'
 
-register('Cart', () => Cart);
+register('Cart', () => React.memo(Cart));
 
 populate({ attributes: { classname: 'some-class-name' } });
 ```
