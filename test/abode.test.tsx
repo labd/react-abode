@@ -20,7 +20,10 @@ import 'mutationobserver-shim';
 global.MutationObserver = window.MutationObserver;
 
 describe('helper functions', () => {
-  beforeEach(() => (document.getElementsByTagName('html')[0].innerHTML = ''));
+  beforeEach(() => {
+    document.getElementsByTagName('html')[0].innerHTML = '';
+    unRegisterAllComponents();
+  });
 
   it('getCleanPropName', () => {
     expect(getCleanPropName('data-prop-some-random-prop')).toEqual(
@@ -33,6 +36,10 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-component', 'TestComponent');
     document.body.appendChild(abodeElement);
 
+    expect(getAbodeElements()).toHaveLength(0);
+
+    register('TestComponent', () => TestComponent);
+
     expect(getAbodeElements()).toHaveLength(1);
   });
 
@@ -41,6 +48,11 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-component', 'TestComponent');
     document.body.appendChild(abodeElement);
 
+    setUnpopulatedElements();
+
+    expect(unPopulatedElements).toHaveLength(0);
+
+    register('TestComponent', () => TestComponent);
     setUnpopulatedElements();
 
     expect(unPopulatedElements).toHaveLength(1);

@@ -93,7 +93,14 @@ export const getScriptProps = () => {
 
 // start element logic
 export const getAbodeElements = (): Element[] => {
-  return Array.from(document.querySelectorAll(`[${componentSelector}]`));
+  return Array.from(document.querySelectorAll(`[${componentSelector}]`)).filter(
+    el => {
+      const component = el.getAttribute(componentSelector);
+
+      // It should exist in registered components
+      return component && components[component];
+    }
+  );
 };
 
 export const setUnpopulatedElements = () => {
@@ -166,7 +173,8 @@ const checkForAndHandleNewComponents = async (options?: PopulateOptions) => {
 };
 
 export const populate = async (options?: PopulateOptions) => {
-  checkForAndHandleNewComponents(options);
+  await checkForAndHandleNewComponents(options);
+
   document.body.addEventListener('DOMNodeInserted', () =>
     checkForAndHandleNewComponents(options)
   );
