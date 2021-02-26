@@ -79,7 +79,13 @@ export const getElementProps = (el: Element | HTMLScriptElement): Props => {
     const rawProps = Array.from(el.attributes).filter(attribute =>
       attribute.name.startsWith('data-prop-')
     );
-    rawProps.forEach(prop => (props[getCleanPropName(prop.name)] = prop.value));
+    rawProps.forEach(prop => {
+      try {
+        props[getCleanPropName(prop.name)] = JSON.parse(prop.value);
+      } catch (e) {
+        props[getCleanPropName(prop.name)] = prop.value;
+      }
+    });
   }
 
   return props;

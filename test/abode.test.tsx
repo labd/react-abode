@@ -62,10 +62,19 @@ describe('helper functions', () => {
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponent');
     abodeElement.setAttribute('data-prop-test-prop', 'testPropValue');
+    abodeElement.setAttribute('data-prop-number-prop', '12345');
+    abodeElement.setAttribute(
+      'data-prop-json-prop',
+      '{"id": 12345, "product": "keyboard", "variant": {"color": "blue"}}'
+    );
 
     const props = getElementProps(abodeElement);
 
-    expect(props).toEqual({ testProp: 'testPropValue' });
+    expect(props).toEqual({
+      testProp: 'testPropValue',
+      numberProp: 12345,
+      jsonProp: { id: 12345, product: 'keyboard', variant: { color: 'blue' } },
+    });
   });
 
   it('setAttributes', () => {
