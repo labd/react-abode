@@ -1,3 +1,4 @@
+import * as fc from 'fast-check';
 import {
   getCleanPropName,
   getAbodeElements,
@@ -62,10 +63,35 @@ describe('helper functions', () => {
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponent');
     abodeElement.setAttribute('data-prop-test-prop', 'testPropValue');
+    abodeElement.setAttribute('data-prop-number-prop', '12345');
+    abodeElement.setAttribute('data-prop-null-prop', 'null');
+    abodeElement.setAttribute('data-prop-true-prop', 'true');
+    abodeElement.setAttribute('data-prop-empty-prop', '');
+    abodeElement.setAttribute(
+      'data-prop-json-prop',
+      '{"id": 12345, "product": "keyboard", "variant": {"color": "blue"}}'
+    );
 
     const props = getElementProps(abodeElement);
 
-    expect(props).toEqual({ testProp: 'testPropValue' });
+    expect(props).toEqual({
+      testProp: 'testPropValue',
+      numberProp: 12345,
+      nullProp: null,
+      trueProp: true,
+      emptyProp: '',
+      jsonProp: { id: 12345, product: 'keyboard', variant: { color: 'blue' } },
+    });
+  });
+  it('getElementProps parses JSON', () => {
+    fc.assert(
+      fc.property(fc.jsonObject({ maxDepth: 10 }), data => {
+        const abodeElement = document.createElement('div');
+        abodeElement.setAttribute('data-prop-test-prop', JSON.stringify(data));
+        const props = getElementProps(abodeElement);
+        expect(props.testProp).toEqual(data);
+      })
+    );
   });
 
   it('setAttributes', () => {
