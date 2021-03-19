@@ -34,19 +34,21 @@
   "name": "react-abode",
   "author": "Bram Kaashoek",
   "module": "dist/react-abode.esm.js",
-  "dependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
-  },
   "devDependencies": {
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
     "fast-check": "^2.13.0",
     "husky": "^4.2.5",
     "mutationobserver-shim": "^0.3.7",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.0",
     "typescript": "^3.9.7"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
   },
   "resolutions": {
     "serialize-javascript": "^3.1.0"
