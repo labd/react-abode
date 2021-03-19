@@ -1,5 +1,5 @@
-import { render } from 'react-dom';
-import { createElement, FC } from 'react';
+import { render } from 'preact';
+import { createElement, FC } from 'preact/compat';
 
 interface RegisteredComponents {
   [key: string]: Promise<any>;

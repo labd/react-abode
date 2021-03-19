@@ -35,12 +35,9 @@
   "author": "Bram Kaashoek",
   "module": "dist/react-abode.esm.js",
   "dependencies": {
-    "react": ">=16",
-    "react-dom": ">=16"
+    "preact": "^10.5.13"
   },
   "devDependencies": {
-    "@types/react": "^16.9.23",
-    "@types/react-dom": "^16.9.5",
     "fast-check": "^2.13.0",
     "husky": "^4.2.5",
     "mutationobserver-shim": "^0.3.7",

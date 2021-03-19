@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'preact/compat';
 
-const TestComponent = (): JSX.Element => {
+const TestComponent = (): preact.JSX.Element => {
   return <div>testing 1 2 3 </div>;
 };
 
