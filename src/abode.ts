@@ -1,5 +1,4 @@
-import { render } from 'preact';
-import { createElement, FC } from 'preact/compat';
+import { render, createElement, FC } from 'preact/compat';
 
 interface RegisteredComponents {
   [key: string]: Promise<any>;
