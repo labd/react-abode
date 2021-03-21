@@ -80,9 +80,14 @@ export const getElementProps = (el: Element | HTMLScriptElement): Props => {
       attribute.name.startsWith('data-prop-')
     );
     rawProps.forEach(prop => {
-      try {
-        props[getCleanPropName(prop.name)] = JSON.parse(prop.value);
-      } catch (e) {
+      const arrayOrObjRegex = /[({.*})(\[.*\])]/;
+      if (arrayOrObjRegex.test(prop.value)) {
+        try {
+          props[getCleanPropName(prop.name)] = JSON.parse(prop.value);
+        } catch (e) {
+          console.error('Could not parse JSON');
+        }
+      } else {
         props[getCleanPropName(prop.name)] = prop.value;
       }
     });
