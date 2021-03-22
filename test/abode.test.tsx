@@ -65,6 +65,9 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-prop-test-prop', 'testPropValue');
     abodeElement.setAttribute('data-prop-empty-prop', '');
     abodeElement.setAttribute('data-prop-array-prop', '[null]');
+    abodeElement.setAttribute('data-prop-path-prop', '/index.html');
+    abodeElement.setAttribute('data-prop-opening-brackets-prop', '{...[[');
+    abodeElement.setAttribute('data-prop-closing-brackets-prop', '}}}]]');
     abodeElement.setAttribute(
       'data-prop-json-prop',
       '{"id": 12345, "product": "keyboard", "variant": {"color": "blue"}}'
@@ -76,8 +79,35 @@ describe('helper functions', () => {
       testProp: 'testPropValue',
       emptyProp: '',
       arrayProp: [null],
+      pathProp: '/index.html',
+      openingBracketsProp: '{...[[',
+      closingBracketsProp: '}}}]]',
       jsonProp: { id: 12345, product: 'keyboard', variant: { color: 'blue' } },
     });
+  });
+  it('getElementProps does not parse attributes as JSON if they are not an object or an array', () => {
+    const isArrayOrObj = (t: string) => {
+      return !/^[.*]$|^{.*}$/.test(t);
+    };
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 3, maxLength: 25 }).filter(isArrayOrObj),
+        fc.webUrl(),
+        fc.emailAddress(),
+        (str, url, email) => {
+          const abodeElement = document.createElement('div');
+          abodeElement.setAttribute('data-prop-str-prop', str);
+          abodeElement.setAttribute('data-prop-url-prop', url);
+          abodeElement.setAttribute('data-prop-email-prop', email);
+          const props = getElementProps(abodeElement);
+          expect(props).toEqual({
+            strProp: str,
+            urlProp: url,
+            emailProp: email,
+          });
+        }
+      )
+    );
   });
   it('getElementProps parses JSON if attribute is object or array', () => {
     const isArrayOrObj = (t: unknown) =>
