@@ -66,6 +66,7 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-prop-number-prop', '12345');
     abodeElement.setAttribute('data-prop-null-prop', 'null');
     abodeElement.setAttribute('data-prop-true-prop', 'true');
+    abodeElement.setAttribute('data-prop-leading-zeros', '0012');
     abodeElement.setAttribute('data-prop-empty-prop', '');
     abodeElement.setAttribute(
       'data-prop-json-prop',
@@ -79,6 +80,7 @@ describe('helper functions', () => {
       numberProp: 12345,
       nullProp: null,
       trueProp: true,
+      leadingZeros: '0012',
       emptyProp: '',
       jsonProp: { id: 12345, product: 'keyboard', variant: { color: 'blue' } },
     });
@@ -88,6 +90,23 @@ describe('helper functions', () => {
       fc.property(fc.jsonObject({ maxDepth: 10 }), data => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', JSON.stringify(data));
+        const props = getElementProps(abodeElement);
+        expect(props.testProp).toEqual(data);
+      })
+    );
+  });
+
+  it('getElementProps does not parse strings with leading zeros followed by other digits', () => {
+    const strWithLeadingZeros = fc
+      .tuple(fc.integer(1, 10), fc.integer())
+      .map(t => {
+        const [numberOfZeros, integer] = t;
+        return '0'.repeat(numberOfZeros) + integer.toString();
+      });
+    fc.assert(
+      fc.property(strWithLeadingZeros, data => {
+        const abodeElement = document.createElement('div');
+        abodeElement.setAttribute('data-prop-test-prop', data);
         const props = getElementProps(abodeElement);
         expect(props.testProp).toEqual(data);
       })
