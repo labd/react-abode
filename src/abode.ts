@@ -84,7 +84,7 @@ export const getElementProps = (el: Element | HTMLScriptElement): Props => {
         /* 
         ie11 bug fix; 
         in ie11 JSON.parse will parse a string with leading zeros followed
-        by digits, e.g. '00012' will become '12', whereas in other browsers
+        by digits, e.g. '00012' will become 12, whereas in other browsers
         an exception will be thrown by JSON.parse
         */
         props[getCleanPropName(prop.name)] = prop.value;
