@@ -67,6 +67,11 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-prop-null-prop', 'null');
     abodeElement.setAttribute('data-prop-true-prop', 'true');
     abodeElement.setAttribute('data-prop-leading-zeros', '0012');
+    abodeElement.setAttribute('data-prop-leading-zero', '012');
+    abodeElement.setAttribute('data-prop-sku-one', 'B123456');
+    abodeElement.setAttribute('data-prop-sku-two', 'AW-ARZA18-C0LM-78');
+    abodeElement.setAttribute('data-prop-sku-three', 'TO-8370-228-770-6.0');
+    abodeElement.setAttribute('data-prop-float', '10.46');
     abodeElement.setAttribute('data-prop-empty-prop', '');
     abodeElement.setAttribute(
       'data-prop-json-prop',
@@ -81,6 +86,11 @@ describe('helper functions', () => {
       nullProp: null,
       trueProp: true,
       leadingZeros: '0012',
+      leadingZero: '012',
+      skuOne: 'B123456',
+      skuTwo: 'AW-ARZA18-C0LM-78',
+      skuThree: 'TO-8370-228-770-6.0',
+      float: 10.46,
       emptyProp: '',
       jsonProp: { id: 12345, product: 'keyboard', variant: { color: 'blue' } },
     });
