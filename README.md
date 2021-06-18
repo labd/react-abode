@@ -34,13 +34,15 @@ By default all supplied props will be parsed with `JSON.parse`. In case a prop s
 
 ```js
 // <div data-component="Product" data-prop-sku="1234" data-prop-is-available="true" data-prop-price="10.99" >
-register('Product', props => import('./modules/Product/Product'), {
-  sku: prop => String(prop),
-  isAvailable: prop => Boolean(prop),
-  price: prop => Float(prop),
+register('Product', () => import('./modules/Product/Product'), {
+  propParsers: {
+    sku: prop => String(prop),
+    isAvailable: prop => Boolean(prop),
+    price: prop => Float(prop),
+  },
 });
 // <script data-prop-global="1234"></script>
-getScriptProps({ global: prop => String(prop) });
+getScriptProps({ propParsers: { global: prop => String(prop) } });
 ```
 
 - default JSON.parse

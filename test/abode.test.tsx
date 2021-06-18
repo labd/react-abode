@@ -223,10 +223,12 @@ describe('exported functions', () => {
     document.body.appendChild(abodeElement);
 
     register('TestComponentProps', () => TestComponentProps, {
-      number: (prop: string) => Number(prop),
-      boolean: (prop: string) => Boolean(prop),
-      numberAsString: (prop: string) => prop,
-      float: (prop: string) => parseFloat(prop),
+      propParsers: {
+        number: (prop: string) => Number(prop),
+        boolean: (prop: string) => Boolean(prop),
+        numberAsString: (prop: string) => prop,
+        float: (prop: string) => parseFloat(prop),
+      },
     });
     await populate();
     await delay(20);
@@ -251,7 +253,9 @@ describe('exported functions', () => {
       fc.property(fc.anything(), data => {
         abodeElement.setAttribute('data-prop-anything', JSON.stringify(data));
         register('TestComponentProps', () => TestComponentProps, {
-          anything: (prop: string) => JSON.parse(prop),
+          propParsers: {
+            anything: (prop: string) => JSON.parse(prop),
+          },
         });
         populate()
           .then(() => delay(20))

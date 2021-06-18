@@ -2,13 +2,19 @@ import { render } from 'react-dom';
 import { createElement, FC } from 'react';
 
 interface RegisteredComponents {
-  [key: string]: { module: Promise<any>; propParsers?: PropParsers };
+  [key: string]: {
+    module: Promise<any>;
+    options?: { propParsers?: PropParsers };
+  };
 }
 
 interface Props {
   [key: string]: string;
 }
 
+interface Options {
+  propParsers?: PropParsers;
+}
 interface PropParsers {
   [key: string]: ParseFN;
 }
@@ -31,12 +37,8 @@ export let componentSelector = 'data-component';
 export let components: RegisteredComponents = {};
 export let unPopulatedElements: Element[] = [];
 
-export const register = (
-  name: string,
-  fn: RegisterFN,
-  propParsers: PropParsers = {}
-) => {
-  components[name] = { module: retry(fn, 10, 20), propParsers };
+export const register = (name: string, fn: RegisterFN, options?: Options) => {
+  components[name] = { module: retry(fn, 10, 20), options };
 };
 
 export const unRegisterAllComponents = () => {
@@ -83,7 +85,7 @@ export const getCleanPropName = (raw: string): string => {
 
 export const getElementProps = (
   el: Element | HTMLScriptElement,
-  globalPropParsers?: PropParsers
+  options?: Options
 ): Props => {
   const props: { [key: string]: string } = {};
 
@@ -95,8 +97,8 @@ export const getElementProps = (
       const componentName = getComponentName(el) ?? '';
       const propName = getCleanPropName(prop.name);
       const propParser =
-        globalPropParsers?.[propName] ??
-        components[componentName]?.propParsers?.[propName];
+        options?.propParsers?.[propName] ??
+        components[componentName]?.options?.propParsers?.[propName];
       if (propParser) {
         // custom parse function for prop
         props[propName] = propParser(prop.value);
@@ -124,9 +126,9 @@ export const getElementProps = (
   return props;
 };
 
-export const getScriptProps = (propParsers?: PropParsers) => {
+export const getScriptProps = (options?: Options) => {
   const element = document.currentScript as HTMLScriptElement;
-  return getElementProps(element, propParsers);
+  return getElementProps(element, options);
 };
 // end prop logic
 
