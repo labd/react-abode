@@ -1,5 +1,4 @@
 import React from 'react';
-import { getScriptProps } from '../src/abode';
 
 export interface Props {
   number: number;
@@ -15,7 +14,6 @@ export const util = {
 
 const TestComponentProps = (props: Props): JSX.Element => {
   util.getProps(props);
-  util.getScriptProps(getScriptProps());
   return <div>1 2 3</div>;
 };
 
