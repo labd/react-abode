@@ -1,3 +1,4 @@
+import { getCurrentScript } from 'tiny-current-script';
 import { render } from 'react-dom';
 import { createElement, FC } from 'react';
 
@@ -102,7 +103,10 @@ export const getElementProps = (el: Element | HTMLScriptElement): Props => {
 };
 
 export const getScriptProps = () => {
-  const element = document.currentScript as HTMLScriptElement;
+  const element = getCurrentScript();
+  if (element === null) {
+    throw new Error('Failed to get current script');
+  }
   return getElementProps(element);
 };
 // end prop logic

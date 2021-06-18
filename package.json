@@ -52,5 +52,8 @@
   },
   "resolutions": {
     "serialize-javascript": "^3.1.0"
+  },
+  "dependencies": {
+    "tiny-current-script": "^1.0.0"
   }
 }
