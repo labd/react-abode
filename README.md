@@ -28,6 +28,26 @@ const scriptProps = getScriptProps();
 console.log(scriptProps.globalProp);
 ```
 
+### Prop parsing
+
+By default all supplied props will be parsed with `JSON.parse`. In case a prop should be parsed differently, custom parse functions can be provided to `register` or `getScriptProps`.
+
+```js
+// <div data-component="Product" data-prop-sku="1234" data-prop-is-available="true" data-prop-price="10.99" >
+register('Product', () => import('./modules/Product/Product'), {
+  propParsers: {
+    sku: prop => String(prop),
+    isAvailable: prop => Boolean(prop),
+    price: prop => Float(prop),
+  },
+});
+// <script data-prop-global="1234"></script>
+getScriptProps({ propParsers: { global: prop => String(prop) } });
+```
+
+- default JSON.parse
+- custom prop parsing function
+
 ### Automatic DOM node detection
 
 When DOM nodes are added, for example when loading more products in a catalog on a SPA, React Abode will automatically detect them and populate them with your React components.
@@ -53,7 +73,7 @@ import { populate, register } from 'react-abode';
 register('Cart', () => import('./modules/Cart/Cart'));
 
 // Component can also be used directly
-import Cart from './modules/Cart/Cart'
+import Cart from './modules/Cart/Cart';
 
 register('Cart', () => React.memo(Cart));
 
