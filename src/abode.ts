@@ -3,11 +3,21 @@ import { render } from 'react-dom';
 import { createElement, FC } from 'react';
 
 interface RegisteredComponents {
-  [key: string]: Promise<any>;
+  [key: string]: {
+    module: Promise<any>;
+    options?: { propParsers?: PropParsers };
+  };
 }
 
 interface Props {
   [key: string]: string;
+}
+
+interface Options {
+  propParsers?: PropParsers;
+}
+interface PropParsers {
+  [key: string]: ParseFN;
 }
 
 interface HTMLElementAttributes {
@@ -22,13 +32,14 @@ interface PopulateOptions {
 export type RegisterPromise = () => Promise<any>;
 export type RegisterComponent = () => FC<any>;
 export type RegisterFN = RegisterPromise | RegisterComponent;
+export type ParseFN = (rawProp: string) => any;
 
 export let componentSelector = 'data-component';
 export let components: RegisteredComponents = {};
 export let unPopulatedElements: Element[] = [];
 
-export const register = (name: string, fn: RegisterFN) => {
-  components[name] = retry(fn, 10, 20);
+export const register = (name: string, fn: RegisterFN, options?: Options) => {
+  components[name] = { module: retry(fn, 10, 20), options };
 };
 
 export const unRegisterAllComponents = () => {
@@ -73,7 +84,10 @@ export const getCleanPropName = (raw: string): string => {
   return raw.replace('data-prop-', '').replace(/-./g, x => x.toUpperCase()[1]);
 };
 
-export const getElementProps = (el: Element | HTMLScriptElement): Props => {
+export const getElementProps = (
+  el: Element | HTMLScriptElement,
+  options?: Options
+): Props => {
   const props: { [key: string]: string } = {};
 
   if (el?.attributes) {
@@ -81,19 +95,30 @@ export const getElementProps = (el: Element | HTMLScriptElement): Props => {
       attribute.name.startsWith('data-prop-')
     );
     rawProps.forEach(prop => {
-      if (/^0+\d+$/.test(prop.value)) {
-        /* 
-        ie11 bug fix; 
-        in ie11 JSON.parse will parse a string with leading zeros followed
-        by digits, e.g. '00012' will become 12, whereas in other browsers
-        an exception will be thrown by JSON.parse
-        */
-        props[getCleanPropName(prop.name)] = prop.value;
+      const componentName = getComponentName(el) ?? '';
+      const propName = getCleanPropName(prop.name);
+      const propParser =
+        options?.propParsers?.[propName] ??
+        components[componentName]?.options?.propParsers?.[propName];
+      if (propParser) {
+        // custom parse function for prop
+        props[propName] = propParser(prop.value);
       } else {
-        try {
-          props[getCleanPropName(prop.name)] = JSON.parse(prop.value);
-        } catch (e) {
-          props[getCleanPropName(prop.name)] = prop.value;
+        // default json parsing
+        if (/^0+\d+$/.test(prop.value)) {
+          /* 
+          ie11 bug fix; 
+          in ie11 JSON.parse will parse a string with leading zeros followed
+          by digits, e.g. '00012' will become 12, whereas in other browsers
+          an exception will be thrown by JSON.parse
+          */
+          props[propName] = prop.value;
+        } else {
+          try {
+            props[propName] = JSON.parse(prop.value);
+          } catch (e) {
+            props[propName] = prop.value;
+          }
         }
       }
     });
@@ -102,12 +127,12 @@ export const getElementProps = (el: Element | HTMLScriptElement): Props => {
   return props;
 };
 
-export const getScriptProps = () => {
+export const getScriptProps = (options?: Options) => {
   const element = getCurrentScript();
   if (element === null) {
     throw new Error('Failed to get current script');
   }
-  return getElementProps(element);
+  return getElementProps(element, options);
 };
 // end prop logic
 
@@ -135,14 +160,18 @@ export const setAttributes = (
 ) => {
   Object.entries(attributes).forEach(([k, v]) => el.setAttribute(k, v));
 };
+
 // end element logic
+
+function getComponentName(el: Element) {
+  return Array.from(el.attributes).find(at => at.name === componentSelector)
+    ?.value;
+}
 
 export const renderAbode = async (el: Element) => {
   const props = getElementProps(el);
 
-  const componentName = Array.from(el.attributes).find(
-    at => at.name === componentSelector
-  )?.value;
+  const componentName = getComponentName(el);
 
   if (!componentName || componentName === '') {
     throw new Error(
@@ -150,7 +179,7 @@ export const renderAbode = async (el: Element) => {
     );
   }
 
-  const module = await components[componentName];
+  const module = await components[componentName]?.module;
   if (!module) {
     throw new Error(`no component registered for ${componentName}`);
   }
