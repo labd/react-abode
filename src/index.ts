@@ -2,7 +2,7 @@ export {
   populate,
   setComponentSelector,
   register,
-  getScriptProps,
+  getGlobalProps,
   getRegisteredComponents,
   getActiveComponents,
 } from './abode';

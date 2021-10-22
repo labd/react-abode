@@ -5993,11 +5993,6 @@ through@^2.3.6:
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
 
-tiny-current-script@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/tiny-current-script/-/tiny-current-script-1.0.0.tgz#2ebabe686d8cc33e2b0f12959f06ec5c355c1846"
-  integrity sha512-x+NsnwyoROg80l4M/31wmTXReofpr4BpTd6HXVSQu55bM19IZEy8D6s2KjMGK5OeQwGv9J+SQhegh9N2lCYJPg==
-
 tiny-glob@^0.2.6:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/tiny-glob/-/tiny-glob-0.2.6.tgz#9e056e169d9788fe8a734dfa1ff02e9b92ed7eda"

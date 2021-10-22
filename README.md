@@ -12,25 +12,9 @@ React Abode allows you to pass props to your React components by using a `data-p
 <div data-component="Price" data-prop-sku="123456"></div>
 ```
 
-### Script props
-
-React Abode allows you to pass `data-prop-` props to the script. These can then be consumed inside your bundle by using `getScriptProps()`. This is useful when you need to have a prop available in every component.
-
-```html
-<script
-  src="your/bundle/location.js"
-  data-prop-global-prop="some prop you want in all your components"
-></script>
-```
-
-```javascript
-const scriptProps = getScriptProps();
-console.log(scriptProps.globalProp);
-```
-
 ### Prop parsing
 
-By default all supplied props will be parsed with `JSON.parse`. In case a prop should be parsed differently, custom parse functions can be provided to `register` or `getScriptProps`.
+By default all supplied props will be parsed with `JSON.parse`. In case a prop should be parsed differently, custom parse functions can be provided to `register` or `getGlobalProps`.
 
 ```js
 // <div data-component="Product" data-prop-sku="1234" data-prop-is-available="true" data-prop-price="10.99" >
@@ -41,12 +25,48 @@ register('Product', () => import('./modules/Product/Product'), {
     price: prop => Float(prop),
   },
 });
-// <script data-prop-global="1234"></script>
-getScriptProps({ propParsers: { global: prop => String(prop) } });
+// <div id="globalProps" data-prop-global="1234"></div>
+getGlobalProps({ propParsers: { global: prop => String(prop) } });
 ```
 
-- default JSON.parse
-- custom prop parsing function
+### Global props
+
+React Abode allows you to pass global props via the `data-prop-` attribute to an html element with a specific id. These props can then be consumed inside your bundle by using `getGlobalProps()`. This is useful when you need to have a prop available in every component.
+
+```html
+<div
+  id="globalProps"
+  data-prop-global-prop="some prop you want in all your components"
+></div>
+```
+
+```javascript
+const globalProps = getGlobalProps();
+console.log(scriptProps.globalProp);
+```
+
+The default value for the id attribute is `globalProps`. You can also pass your own id value to `getGlobalProps`:
+
+```html
+<div
+  id="myGlobalId"
+  data-prop-global-prop="some prop you want in all your components"
+></div>
+```
+
+```javascript
+const globalProps = getGlobalProps('myGlobalId');
+console.log(scriptProps.globalProp);
+```
+
+In case you wish that your prop does not get parsed via `JSON.parse` you can also pass a custom parse function:
+
+```js
+const globalProps = getGlobalProps('myGlobalId', {
+  propParsers: { globalProp: prop => String(prop) },
+});
+console.log(typeof scriptProps.globalProp);
+```
 
 ### Automatic DOM node detection
 

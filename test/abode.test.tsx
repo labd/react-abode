@@ -13,6 +13,7 @@ import {
   components,
   populate,
   delay,
+  getGlobalProps,
 } from '../src/abode';
 // @ts-ignore
 import TestComponent from './TestComponent';
@@ -275,7 +276,23 @@ describe('exported functions', () => {
       })
     );
   });
-  it.skip('getScriptProps', () => {});
+
+  it('getGlobalProps', () => {
+    const abodeElement = document.createElement('div');
+    abodeElement.setAttribute('id', 'globalProps');
+    abodeElement.setAttribute('data-prop-global-str', 'test');
+    abodeElement.setAttribute('data-prop-global-bool', 'true');
+    document.body.appendChild(abodeElement);
+
+    const globalProps = getGlobalProps('globalProps', {
+      propParsers: { globalBool: (prop: string) => String(prop) },
+    });
+
+    expect(globalProps).toStrictEqual({
+      globalStr: 'test',
+      globalBool: 'true',
+    });
+  });
   it.skip('getActiveComponents', () => {});
   it.skip('setComponentSelector', () => {});
   it.skip('register', () => {});

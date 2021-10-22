@@ -1,3 +1,7 @@
+## 2.0.0
+
+- changed: replace getScriptProps with getGlobalProps
+
 ## 1.0.0 (2021-06-18)
 
 - feature: Add option for passing custom prop parsers

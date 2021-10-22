@@ -1,4 +1,3 @@
-import { getCurrentScript } from 'tiny-current-script';
 import { render } from 'react-dom';
 import { createElement, FC } from 'react';
 
@@ -127,10 +126,15 @@ export const getElementProps = (
   return props;
 };
 
-export const getScriptProps = (options?: Options) => {
-  const element = getCurrentScript();
+export const getGlobalProps = (
+  elementId: string = 'globalProps',
+  options?: Options
+) => {
+  const element = document.querySelector(`#${elementId}`);
+
   if (element === null) {
-    throw new Error('Failed to get current script');
+    console.error(`Failed to find element with id ${elementId} in document`);
+    return null;
   }
   return getElementProps(element, options);
 };
