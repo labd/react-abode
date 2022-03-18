@@ -95,6 +95,7 @@ describe('helper functions', () => {
       jsonProp: { id: 12345, product: 'keyboard', variant: { color: 'blue' } },
     });
   });
+
   it('getElementProps parses JSON', () => {
     fc.assert(
       fc.property(fc.jsonObject({ maxDepth: 10 }), data => {
@@ -254,6 +255,25 @@ describe('exported functions', () => {
       float: 1.01,
     });
   });
+
+  it('unmounts the React component when the wrapper is removed from the DOM', async () => {
+    const abodeElement = document.createElement('div');
+    abodeElement.setAttribute('data-component', 'TestComponentWithUnmount');
+    document.body.appendChild(abodeElement);
+    register('TestComponentWithUnmount', () =>
+      import('./TestComponentWithUnmount')
+    );
+    await populate();
+    await delay(20);
+    expect(document.body.innerHTML).toEqual(
+      `<div data-component="TestComponentWithUnmount" react-abode-populated="true"><h1>test component</h1></div>`
+    );
+
+    document.body.removeChild(abodeElement);
+    await delay(20);
+    expect(document.body.innerHTML).toEqual(`<unmounted></unmounted>`);
+  });
+
   it('uses JSON.parse as a custom prop parser', async () => {
     const spy = jest.spyOn(util, 'getProps');
     const abodeElement = document.createElement('div');
@@ -275,6 +295,7 @@ describe('exported functions', () => {
       })
     );
   });
+
   it.skip('getScriptProps', () => {});
   it.skip('getActiveComponents', () => {});
   it.skip('setComponentSelector', () => {});
