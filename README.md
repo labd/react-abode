@@ -51,6 +51,7 @@ getScriptProps({ propParsers: { global: prop => String(prop) } });
 ### Automatic DOM node detection
 
 When DOM nodes are added, for example when loading more products in a catalog on a SPA, React Abode will automatically detect them and populate them with your React components.
+When a DOM node containing a hosted React component is removed, the component is unmounted.
 
 ### Update on prop change
 
