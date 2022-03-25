@@ -1,5 +1,5 @@
 import { getCurrentScript } from 'tiny-current-script';
-import { render } from 'react-dom';
+import { render, unmountComponentAtNode } from 'react-dom';
 import { createElement, FC } from 'react';
 
 interface RegisteredComponents {
@@ -106,8 +106,8 @@ export const getElementProps = (
       } else {
         // default json parsing
         if (/^0+\d+$/.test(prop.value)) {
-          /* 
-          ie11 bug fix; 
+          /*
+          ie11 bug fix;
           in ie11 JSON.parse will parse a string with leading zeros followed
           by digits, e.g. '00012' will become 12, whereas in other browsers
           an exception will be thrown by JSON.parse
@@ -198,6 +198,30 @@ export const trackPropChanges = (el: Element) => {
   }
 };
 
+function unmountOnNodeRemoval(element: any) {
+  const observer = new MutationObserver(function() {
+    function isDetached(el: any): any {
+      if (el.parentNode === document) {
+        return false;
+      } else if (el.parentNode === null) {
+        return true;
+      } else {
+        return isDetached(el.parentNode);
+      }
+    }
+
+    if (isDetached(element)) {
+      observer.disconnect();
+      unmountComponentAtNode(element);
+    }
+  });
+
+  observer.observe(document, {
+    childList: true,
+    subtree: true,
+  });
+}
+
 export const update = async (
   elements: Element[],
   options?: PopulateOptions
@@ -208,6 +232,7 @@ export const update = async (
     if (options?.attributes) setAttributes(el, options.attributes);
     renderAbode(el);
     trackPropChanges(el);
+    unmountOnNodeRemoval(el);
   });
 };
 
