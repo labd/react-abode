@@ -1,7 +1,7 @@
 {
   "include": ["src", "types"],
   "compilerOptions": {
-    "module": "esnext",
+    "module": "CommonJS",
     "lib": ["dom", "esnext"],
     "target": "ES5",
     "importHelpers": true,
@@ -19,6 +19,7 @@
       "*": ["src/*", "node_modules/*"]
     },
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node", "jest", "jsdom"]
   }
 }

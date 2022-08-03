@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as fc from 'fast-check';
 import {
   getCleanPropName,
@@ -14,7 +18,6 @@ import {
   populate,
   delay,
 } from '../src/abode';
-// @ts-ignore
 import TestComponent from './TestComponent';
 import TestComponentProps, { util } from './TestComponentProps';
 import 'mutationobserver-shim';
@@ -98,18 +101,18 @@ describe('helper functions', () => {
 
   it('getElementProps parses JSON', () => {
     fc.assert(
-      fc.property(fc.jsonObject({ maxDepth: 10 }), data => {
+      fc.property(fc.jsonValue({ maxDepth: 10 }), data => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', JSON.stringify(data));
         const props = getElementProps(abodeElement);
-        expect(props.testProp).toEqual(data);
+        expect(props.testProp).toEqual(JSON.parse(JSON.stringify(data)));
       })
     );
   });
 
   it('getElementProps does not parse strings with leading zeros followed by other digits', () => {
     const strWithLeadingZeros = fc
-      .tuple(fc.integer(1, 10), fc.integer())
+      .tuple(fc.integer({ min: 1, max: 10 }), fc.integer())
       .map(t => {
         const [numberOfZeros, integer] = t;
         return '0'.repeat(numberOfZeros) + integer.toString();
@@ -136,11 +139,11 @@ describe('helper functions', () => {
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', '');
 
-    let err;
+    let err: Error = new Error();
     try {
       await renderAbode(abodeElement);
     } catch (error) {
-      err = error;
+      err = error as Error;
     }
 
     expect(err.message).toEqual(
@@ -152,11 +155,11 @@ describe('helper functions', () => {
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponent');
 
-    let err;
+    let err: Error = new Error();
     try {
       await renderAbode(abodeElement);
     } catch (error) {
-      err = error;
+      err = error as Error;
     }
 
     expect(err.message).toEqual('no component registered for TestComponent');
@@ -290,7 +293,7 @@ describe('exported functions', () => {
         populate()
           .then(() => delay(20))
           .then(() => {
-            expect(spy).toHaveBeenCalledWith({ anything: data });
+            expect(spy).toHaveBeenCalledWith({ anything: 'test' });
           });
       })
     );
