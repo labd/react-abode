@@ -1,6 +1,6 @@
 import { getCurrentScript } from 'tiny-current-script';
-import { render, unmountComponentAtNode } from 'react-dom';
 import { createElement, FC } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 
 interface RegisteredComponents {
   [key: string]: {
@@ -26,7 +26,7 @@ interface HTMLElementAttributes {
 
 interface PopulateOptions {
   attributes?: HTMLElementAttributes;
-  callback?: Function;
+  callback?: () => void;
 }
 
 export type RegisterPromise = () => Promise<any>;
@@ -60,7 +60,7 @@ const retry = async (
       await delay(delayTime);
       return retry(fn, times - 1, delayTime * 2);
     } else {
-      throw new Error(err);
+      throw new Error(err as string);
     }
   }
 };
@@ -168,7 +168,7 @@ function getComponentName(el: Element) {
     ?.value;
 }
 
-export const renderAbode = async (el: Element) => {
+export const renderAbode = async (el: Element, root: Root) => {
   const props = getElementProps(el);
 
   const componentName = getComponentName(el);
@@ -186,19 +186,19 @@ export const renderAbode = async (el: Element) => {
 
   const element = module.default || module;
 
-  render(createElement(element, props), el);
+  root.render(createElement(element, props));
 };
 
-export const trackPropChanges = (el: Element) => {
+export const trackPropChanges = (el: Element, root: Root) => {
   if (MutationObserver) {
     const observer = new MutationObserver(() => {
-      renderAbode(el);
+      renderAbode(el, root);
     });
     observer.observe(el, { attributes: true });
   }
 };
 
-function unmountOnNodeRemoval(element: any) {
+function unmountOnNodeRemoval(element: any, root: Root) {
   const observer = new MutationObserver(function() {
     function isDetached(el: any): any {
       if (el.parentNode === document) {
@@ -212,7 +212,7 @@ function unmountOnNodeRemoval(element: any) {
 
     if (isDetached(element)) {
       observer.disconnect();
-      unmountComponentAtNode(element);
+      root.unmount();
     }
   });
 
@@ -229,10 +229,11 @@ export const update = async (
   // tag first, since adding components is a slow process and will cause components to get iterated multiple times
   elements.forEach(el => el.setAttribute('react-abode-populated', 'true'));
   elements.forEach(el => {
+    const root = createRoot(el);
     if (options?.attributes) setAttributes(el, options.attributes);
-    renderAbode(el);
-    trackPropChanges(el);
-    unmountOnNodeRemoval(el);
+    renderAbode(el, root);
+    trackPropChanges(el, root);
+    unmountOnNodeRemoval(el, root);
   });
 };
 
