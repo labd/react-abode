@@ -118,3 +118,7 @@ The `populate` function can be passed an object with options.
 | ---------- | -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | attributes | object   | attributes which will be aplied to every react-abode container                              | `{attributes: { classname: "some-class-name"}}`         |
 | callback   | function | function which will be executed every time a new batch of react-abode elements is populated | `() => console.log('new abode elements added to page')` |
+
+## Contributing
+
+After having commited your changes, run `pnpm changeset` and specify an appropriate bump type and a message. If you want to use your commit message(s) as the changeset message, run `pnpm get:changes` which copies all commit message(s) to your clipboard which you can then paste when running `pnpm changeset`.

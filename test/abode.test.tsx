@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as fc from 'fast-check';
 import {
   getCleanPropName,
@@ -19,7 +23,6 @@ import TestComponent from './TestComponent';
 import TestComponentProps, { util } from './TestComponentProps';
 import 'mutationobserver-shim';
 import { createRoot } from 'react-dom/client';
-import { jsonData } from './jsonData';
 global.MutationObserver = window.MutationObserver;
 
 describe('helper functions', () => {
@@ -100,7 +103,7 @@ describe('helper functions', () => {
 
   it('getElementProps parses JSON', () => {
     fc.assert(
-      fc.property(fc.jsonObject({ maxDepth: 10 }), data => {
+      fc.property(fc.json({ maxDepth: 10 }), data => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', JSON.stringify(data));
         const props = getElementProps(abodeElement);
@@ -111,7 +114,7 @@ describe('helper functions', () => {
 
   it('getElementProps does not parse strings with leading zeros followed by other digits', () => {
     const strWithLeadingZeros = fc
-      .tuple(fc.integer(1, 10), fc.integer())
+      .tuple(fc.integer({ min: 1, max: 10 }), fc.integer())
       .map(t => {
         const [numberOfZeros, integer] = t;
         return '0'.repeat(numberOfZeros) + integer.toString();
@@ -139,11 +142,11 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-component', '');
     const root = createRoot(abodeElement);
 
-    let err;
+    let err = new Error();
     try {
       await renderAbode(abodeElement, root);
     } catch (error) {
-      err = error;
+      err = error as Error;
     }
 
     expect(err.message).toEqual(
@@ -156,11 +159,11 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-component', 'TestComponent');
     const root = createRoot(abodeElement);
 
-    let err;
+    let err = new Error();
     try {
       await renderAbode(abodeElement, root);
     } catch (error) {
-      err = error;
+      err = error as Error;
     }
 
     expect(err.message).toEqual('no component registered for TestComponent');
@@ -282,14 +285,22 @@ describe('exported functions', () => {
     const spy = jest.spyOn(util, 'getProps');
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponentProps');
-    abodeElement.setAttribute('data-prop-anything', JSON.stringify(jsonData));
     document.body.appendChild(abodeElement);
-
-    register('TestComponentProps', () => import('./TestComponentProps'));
-    await populate();
-
-    await delay(20);
-    expect(spy).toHaveBeenCalledWith({ anything: jsonData });
+    fc.assert(
+      fc.property(fc.json(), data => {
+        abodeElement.setAttribute('data-prop-anything', JSON.stringify(data));
+        register('TestComponentProps', () => TestComponentProps, {
+          propParsers: {
+            anything: (prop: string) => JSON.parse(prop),
+          },
+        });
+        populate()
+          .then(() => delay(20))
+          .then(() => {
+            expect(spy).toHaveBeenCalledWith({ anything: data });
+          });
+      })
+    );
   });
 
   it.skip('getScriptProps', () => {});
