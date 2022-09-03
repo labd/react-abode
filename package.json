@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "tsup ./src/index.ts --dts --watch",
-    "build": "tsup ./src/index.ts --dts",
+    "build": "tsup ./src/index.ts --dts --sourcemap --format esm,cjs",
     "changeset": "pnpm exec changeset",
     "get:changes": "git log --format=%B --no-merges HEAD  ^master | pbcopy",
     "husky:install": "pnpm exec husky install",
@@ -34,7 +34,7 @@
   },
   "name": "react-abode",
   "author": "Bram Kaashoek",
-  "module": "dist/react-abode.esm.js",
+  "module": "dist/index.mjs",
   "devDependencies": {
     "@changesets/cli": "^2.24.2",
     "@types/jest": "^28.1.6",
