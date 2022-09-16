@@ -3,26 +3,28 @@
  */
 
 import * as fc from 'fast-check';
+import { populate, register } from '../src/abode';
 import {
-  getCleanPropName,
-  getAbodeElements,
-  getRegisteredComponents,
-  unPopulatedElements,
-  setUnpopulatedElements,
-  getElementProps,
-  setAttributes,
-  renderAbode,
-  register,
-  unRegisterAllComponents,
-  components,
-  populate,
   delay,
-} from '../src/abode';
+  getAbodeElements,
+  getCleanPropName,
+  getElementProps,
+  getRegisteredComponents,
+  renderAbode,
+  setAttributes,
+  unRegisterAllComponents,
+} from '../src/helpers';
+
 // @ts-ignore
-import TestComponent from './TestComponent';
-import TestComponentProps, { util } from './TestComponentProps';
 import 'mutationobserver-shim';
 import { createRoot } from 'react-dom/client';
+import {
+  components,
+  setUnpopulatedElements,
+  unpopulatedElements,
+} from '../src/constants';
+import TestComponent from './TestComponent';
+import TestComponentProps, { util } from './TestComponentProps';
 global.MutationObserver = window.MutationObserver;
 
 describe('helper functions', () => {
@@ -54,14 +56,22 @@ describe('helper functions', () => {
     abodeElement.setAttribute('data-component', 'TestComponent');
     document.body.appendChild(abodeElement);
 
-    setUnpopulatedElements();
+    setUnpopulatedElements(
+      getAbodeElements().filter(
+        (el) => !el.getAttribute('react-abode-populated')
+      )
+    );
 
-    expect(unPopulatedElements).toHaveLength(0);
+    expect(unpopulatedElements).toHaveLength(0);
 
     register('TestComponent', () => TestComponent);
-    setUnpopulatedElements();
+    setUnpopulatedElements(
+      getAbodeElements().filter(
+        (el) => !el.getAttribute('react-abode-populated')
+      )
+    );
 
-    expect(unPopulatedElements).toHaveLength(1);
+    expect(unpopulatedElements).toHaveLength(1);
   });
 
   it('getElementProps', () => {
@@ -103,7 +113,7 @@ describe('helper functions', () => {
 
   it('getElementProps parses JSON', () => {
     fc.assert(
-      fc.property(fc.json({ maxDepth: 10 }), data => {
+      fc.property(fc.json({ maxDepth: 10 }), (data) => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', JSON.stringify(data));
         const props = getElementProps(abodeElement);
@@ -115,12 +125,12 @@ describe('helper functions', () => {
   it('getElementProps does not parse strings with leading zeros followed by other digits', () => {
     const strWithLeadingZeros = fc
       .tuple(fc.integer({ min: 1, max: 10 }), fc.integer())
-      .map(t => {
+      .map((t) => {
         const [numberOfZeros, integer] = t;
         return '0'.repeat(numberOfZeros) + integer.toString();
       });
     fc.assert(
-      fc.property(strWithLeadingZeros, data => {
+      fc.property(strWithLeadingZeros, (data) => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', data);
         const props = getElementProps(abodeElement);
@@ -178,21 +188,23 @@ describe('exported functions', () => {
 
   it('register', async () => {
     register('TestComponent', () => import('./TestComponent'));
-    expect(Object.keys(components)).toEqual(['TestComponent']);
-    expect(Object.values(components).length).toEqual(1);
-    let promise = Object.values(components)[0].module;
+    console.log(components);
+    expect(Array.from(components.keys())).toEqual(['TestComponent']);
+    expect(components.size).toEqual(1);
+    const iterator = components.values();
+    let promise = iterator.next().value.module;
     expect(typeof promise.then).toEqual('function');
     let module = await promise;
     expect(typeof module).toEqual('object');
     expect(Object.keys(module)).toEqual(['default']);
 
     register('TestComponent2', () => TestComponent);
-    expect(Object.keys(components)).toEqual([
+    expect(Array.from(components.keys())).toEqual([
       'TestComponent',
       'TestComponent2',
     ]);
-    expect(Object.values(components).length).toEqual(2);
-    promise = Object.values(components)[1].module;
+    expect(components.size).toEqual(2);
+    promise = iterator.next().value.module;
     expect(typeof promise.then).toEqual('function');
     module = await promise;
     expect(typeof module).toEqual('function');
@@ -227,7 +239,7 @@ describe('exported functions', () => {
 
     const registeredComponents = getRegisteredComponents();
 
-    expect(Object.keys(registeredComponents).length).toEqual(2);
+    expect(registeredComponents.size).toEqual(2);
   });
 
   it('uses custom prop parsers', async () => {
@@ -267,8 +279,9 @@ describe('exported functions', () => {
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponentWithUnmount');
     document.body.appendChild(abodeElement);
-    register('TestComponentWithUnmount', () =>
-      import('./TestComponentWithUnmount')
+    register(
+      'TestComponentWithUnmount',
+      () => import('./TestComponentWithUnmount')
     );
     await populate();
     await delay(20);
@@ -287,7 +300,7 @@ describe('exported functions', () => {
     abodeElement.setAttribute('data-component', 'TestComponentProps');
     document.body.appendChild(abodeElement);
     fc.assert(
-      fc.property(fc.json(), data => {
+      fc.property(fc.json(), (data) => {
         abodeElement.setAttribute('data-prop-anything', JSON.stringify(data));
         register('TestComponentProps', () => TestComponentProps, {
           propParsers: {
