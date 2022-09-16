@@ -1,8 +1,7 @@
+export { populate, register } from './abode';
+export { setComponentSelector } from './constants';
 export {
-  populate,
-  setComponentSelector,
-  register,
-  getScriptProps,
-  getRegisteredComponents,
   getActiveComponents,
-} from './abode';
+  getRegisteredComponents,
+  getScriptProps,
+} from './helpers';
