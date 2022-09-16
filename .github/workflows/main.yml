@@ -6,26 +6,19 @@ jobs:
 
     steps:
       - name: Begin CI...
-        uses: actions/checkout@v2
-
-      - name: Use Node 16
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.x
-
-      # - name: Use cached node_modules
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: node_modules
-      #     key: nodeModules-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       nodeModules-
+        uses: actions/checkout@v3
 
       - uses: pnpm/action-setup@v2.2.2
         name: Install pnpm
         id: pnpm-install
         with:
           version: 7.5.2
+
+      - name: Use Node 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install
