@@ -1,9 +1,10 @@
 {
   "include": ["src", "types"],
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "lib": ["dom", "esnext"],
-    "target": "ES5",
+    "target": "ES6",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
