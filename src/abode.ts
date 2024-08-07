@@ -258,10 +258,10 @@ const checkForAndHandleNewComponents = async (options?: PopulateOptions) => {
 export const populate = async (options?: PopulateOptions) => {
   await checkForAndHandleNewComponents(options);
 
-  const observer = new MutationObserver((mutationList) => {
+  const observer = new MutationObserver(async (mutationList) => {
     for (const mutation of mutationList) {
       if (mutation.type === 'childList') {
-        checkForAndHandleNewComponents;
+        await checkForAndHandleNewComponents(options);
       }
     }
   });
