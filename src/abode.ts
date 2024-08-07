@@ -1,6 +1,6 @@
+import { type FC, createElement } from 'react';
+import { type Root, createRoot } from 'react-dom/client';
 import { getCurrentScript } from 'tiny-current-script';
-import { createElement, FC } from 'react';
-import { createRoot, Root } from 'react-dom/client';
 
 interface RegisteredComponents {
   [key: string]: {
@@ -46,7 +46,7 @@ export const unRegisterAllComponents = () => {
   components = {};
 };
 
-export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const retry = async (
   fn: () => any,
@@ -75,13 +75,15 @@ export const getRegisteredComponents = () => {
 
 export const getActiveComponents = () => {
   return Array.from(
-    new Set(getAbodeElements().map(el => el.getAttribute(componentSelector)))
+    new Set(getAbodeElements().map((el) => el.getAttribute(componentSelector)))
   );
 };
 
 // start prop logic
 export const getCleanPropName = (raw: string): string => {
-  return raw.replace('data-prop-', '').replace(/-./g, x => x.toUpperCase()[1]);
+  return raw
+    .replace('data-prop-', '')
+    .replace(/-./g, (x) => x.toUpperCase()[1]);
 };
 
 export const getElementProps = (
@@ -91,10 +93,10 @@ export const getElementProps = (
   const props: { [key: string]: string } = {};
 
   if (el?.attributes) {
-    const rawProps = Array.from(el.attributes).filter(attribute =>
+    const rawProps = Array.from(el.attributes).filter((attribute) =>
       attribute.name.startsWith('data-prop-')
     );
-    rawProps.forEach(prop => {
+    for (const prop of rawProps) {
       const componentName = getComponentName(el) ?? '';
       const propName = getCleanPropName(prop.name);
       const propParser =
@@ -121,7 +123,7 @@ export const getElementProps = (
           }
         }
       }
-    });
+    }
   }
 
   return props;
@@ -139,7 +141,7 @@ export const getScriptProps = (options?: Options) => {
 // start element logic
 export const getAbodeElements = (): Element[] => {
   return Array.from(document.querySelectorAll(`[${componentSelector}]`)).filter(
-    el => {
+    (el) => {
       const component = el.getAttribute(componentSelector);
 
       // It should exist in registered components
@@ -150,7 +152,7 @@ export const getAbodeElements = (): Element[] => {
 
 export const setUnpopulatedElements = () => {
   unPopulatedElements = getAbodeElements().filter(
-    el => !el.getAttribute('react-abode-populated')
+    (el) => !el.getAttribute('react-abode-populated')
   );
 };
 
@@ -158,13 +160,15 @@ export const setAttributes = (
   el: Element,
   attributes: HTMLElementAttributes
 ) => {
-  Object.entries(attributes).forEach(([k, v]) => el.setAttribute(k, v));
+  for (const [k, v] of Object.entries(attributes)) {
+    el.setAttribute(k, v);
+  }
 };
 
 // end element logic
 
 function getComponentName(el: Element) {
-  return Array.from(el.attributes).find(at => at.name === componentSelector)
+  return Array.from(el.attributes).find((at) => at.name === componentSelector)
     ?.value;
 }
 
@@ -199,7 +203,7 @@ export const trackPropChanges = (el: Element, root: Root) => {
 };
 
 function unmountOnNodeRemoval(element: any, root: Root) {
-  const observer = new MutationObserver(function() {
+  const observer = new MutationObserver(() => {
     function isDetached(el: any): any {
       if (el.parentNode === document) {
         return false;
@@ -227,14 +231,18 @@ export const update = async (
   options?: PopulateOptions
 ) => {
   // tag first, since adding components is a slow process and will cause components to get iterated multiple times
-  elements.forEach(el => el.setAttribute('react-abode-populated', 'true'));
-  elements.forEach(el => {
+  for (const el of elements) {
+    el.setAttribute('react-abode-populated', 'true');
+  }
+
+  // TODO: Move this to requestAnimationFrame inside one loop to optimize
+  for (const el of elements) {
     const root = createRoot(el);
     if (options?.attributes) setAttributes(el, options.attributes);
     renderAbode(el, root);
     trackPropChanges(el, root);
     unmountOnNodeRemoval(el, root);
-  });
+  }
 };
 
 const checkForAndHandleNewComponents = async (options?: PopulateOptions) => {
@@ -250,7 +258,16 @@ const checkForAndHandleNewComponents = async (options?: PopulateOptions) => {
 export const populate = async (options?: PopulateOptions) => {
   await checkForAndHandleNewComponents(options);
 
-  document.body.addEventListener('DOMNodeInserted', () =>
-    checkForAndHandleNewComponents(options)
-  );
+  const observer = new MutationObserver((mutationList) => {
+    for (const mutation of mutationList) {
+      if (mutation.type === 'childList') {
+        checkForAndHandleNewComponents;
+      }
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
 };
