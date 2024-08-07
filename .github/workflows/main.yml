@@ -12,10 +12,10 @@ jobs:
         name: Install pnpm
         id: pnpm-install
 
-      - name: Use Node 16
-        uses: actions/setup-node@v3
+      - name: Use Node 20
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
