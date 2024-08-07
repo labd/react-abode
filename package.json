@@ -5,6 +5,7 @@
     "type": "git",
     "url": "https://github.com/labd/react-abode"
   },
+  "packageManager": "pnpm@9.7.0",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
