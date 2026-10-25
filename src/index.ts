@@ -1,8 +1,8 @@
 export {
-  populate,
-  setComponentSelector,
-  register,
-  getScriptProps,
-  getRegisteredComponents,
   getActiveComponents,
+  getRegisteredComponents,
+  getScriptProps,
+  populate,
+  register,
+  setComponentSelector,
 } from './abode';
