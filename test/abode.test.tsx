@@ -1,25 +1,26 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fc from 'fast-check';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  getCleanPropName,
-  getAbodeElements,
-  getRegisteredComponents,
-  unPopulatedElements,
-  setUnpopulatedElements,
-  getElementProps,
-  setAttributes,
-  renderAbode,
-  register,
-  unRegisterAllComponents,
   components,
-  populate,
   delay,
+  getAbodeElements,
+  getCleanPropName,
+  getElementProps,
+  getRegisteredComponents,
+  populate,
+  register,
+  renderAbode,
+  setAttributes,
+  setUnpopulatedElements,
+  unPopulatedElements,
+  unRegisterAllComponents,
 } from '../src/abode';
-// @ts-ignore
+// @ts-expect-error
 import TestComponent from './TestComponent';
 import TestComponentProps, { util } from './TestComponentProps';
 import 'mutationobserver-shim';
 import { createRoot } from 'react-dom/client';
+
 global.MutationObserver = window.MutationObserver;
 
 describe('helper functions', () => {
@@ -100,7 +101,7 @@ describe('helper functions', () => {
 
   it('getElementProps parses JSON', () => {
     fc.assert(
-      fc.property(fc.json({ maxDepth: 10 }), data => {
+      fc.property(fc.json({ maxDepth: 10 }), (data) => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', JSON.stringify(data));
         const props = getElementProps(abodeElement);
@@ -112,12 +113,12 @@ describe('helper functions', () => {
   it('getElementProps does not parse strings with leading zeros followed by other digits', () => {
     const strWithLeadingZeros = fc
       .tuple(fc.integer({ min: 1, max: 10 }), fc.integer())
-      .map(t => {
+      .map((t) => {
         const [numberOfZeros, integer] = t;
         return '0'.repeat(numberOfZeros) + integer.toString();
       });
     fc.assert(
-      fc.property(strWithLeadingZeros, data => {
+      fc.property(strWithLeadingZeros, (data) => {
         const abodeElement = document.createElement('div');
         abodeElement.setAttribute('data-prop-test-prop', data);
         const props = getElementProps(abodeElement);
@@ -264,8 +265,9 @@ describe('exported functions', () => {
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponentWithUnmount');
     document.body.appendChild(abodeElement);
-    register('TestComponentWithUnmount', () =>
-      import('./TestComponentWithUnmount')
+    register(
+      'TestComponentWithUnmount',
+      () => import('./TestComponentWithUnmount')
     );
     await populate();
     await delay(20);
@@ -284,7 +286,7 @@ describe('exported functions', () => {
     abodeElement.setAttribute('data-component', 'TestComponentProps');
     document.body.appendChild(abodeElement);
     await fc.assert(
-      fc.asyncProperty(fc.json(), async data => {
+      fc.asyncProperty(fc.json(), async (data) => {
         abodeElement.setAttribute('data-prop-anything', JSON.stringify(data));
         register('TestComponentProps', () => TestComponentProps, {
           propParsers: {

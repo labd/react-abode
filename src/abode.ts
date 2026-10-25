@@ -1,5 +1,5 @@
-import { type FC, createElement } from 'react';
-import { type Root, createRoot } from 'react-dom/client';
+import { createElement, type FC } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import { getCurrentScript } from 'tiny-current-script';
 
 interface RegisteredComponents {
