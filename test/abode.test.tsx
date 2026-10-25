@@ -1,7 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fc from 'fast-check';
 import {
   getCleanPropName,
@@ -231,7 +228,7 @@ describe('exported functions', () => {
   });
 
   it('uses custom prop parsers', async () => {
-    const spy = jest.spyOn(util, 'getProps');
+    const spy = vi.spyOn(util, 'getProps');
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponentProps');
     abodeElement.setAttribute('data-prop-number', '1');
@@ -282,23 +279,21 @@ describe('exported functions', () => {
   });
 
   it('uses JSON.parse as a custom prop parser', async () => {
-    const spy = jest.spyOn(util, 'getProps');
+    const spy = vi.spyOn(util, 'getProps');
     const abodeElement = document.createElement('div');
     abodeElement.setAttribute('data-component', 'TestComponentProps');
     document.body.appendChild(abodeElement);
-    fc.assert(
-      fc.property(fc.json(), data => {
+    await fc.assert(
+      fc.asyncProperty(fc.json(), async data => {
         abodeElement.setAttribute('data-prop-anything', JSON.stringify(data));
         register('TestComponentProps', () => TestComponentProps, {
           propParsers: {
             anything: (prop: string) => JSON.parse(prop),
           },
         });
-        populate()
-          .then(() => delay(20))
-          .then(() => {
-            expect(spy).toHaveBeenCalledWith({ anything: data });
-          });
+        await populate();
+        await delay(20);
+        expect(spy).toHaveBeenLastCalledWith({ anything: data });
       })
     );
   });
