@@ -27,8 +27,8 @@ jobs:
         env:
           CI: true
 
-      - name: Lint
-        run: pnpm lint
+      - name: Lint (biome)
+        run: pnpm biome ci
         env:
           CI: true
 

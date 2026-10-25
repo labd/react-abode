@@ -1,5 +1,0 @@
-dist
-node_modules
-.vscode
-coverage
-pnpm-lock.yaml 
