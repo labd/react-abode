@@ -3,7 +3,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/labd/react-abode"
+    "url": "git+https://github.com/labd/react-abode.git"
   },
   "packageManager": "pnpm@12.15.0",
   "main": "dist/index.js",
@@ -62,5 +62,9 @@
   },
   "dependencies": {
     "tiny-current-script": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
