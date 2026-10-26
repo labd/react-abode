@@ -1,5 +1,8 @@
 # React Abode
 
+[![npm](https://img.shields.io/npm/v/react-abode)](https://www.npmjs.com/package/react-abode)
+[![CI](https://github.com/labd/react-abode/actions/workflows/main.yml/badge.svg)](https://github.com/labd/react-abode/actions/workflows/main.yml)
+
 React Abode is a simple React micro-frontend framework allowing you to host multiple react components by defining HTML.
 
 ## Features
