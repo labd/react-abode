@@ -45,8 +45,7 @@
     "check": "biome check && tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "publish:ci": "pnpm build && pnpm changeset publish",
-    "publish:version": "pnpm changeset version && pnpm format",
-    "lint:package": "publint --strict"
+    "publish:version": "pnpm changeset version && pnpm format"
   },
   "name": "react-abode",
   "author": "Bram Kaashoek",
